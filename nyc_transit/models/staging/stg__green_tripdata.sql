@@ -1,42 +1,67 @@
+-- Start of the SQL script
+
+-- The 'source' Common Table Expression (CTE)
+-- This CTE fetches all data from the 'green_tripdata' table in the 'main' source schema.
+-- The '{{ source('main', 'green_tripdata') }}' is a DBT macro used to reference a specific source table.
 with source as (
     select * from {{ source('main', 'green_tripdata') }}
 ),
 
+-- The 'renamed' CTE
+-- This CTE is focused on cleaning, transforming, and filtering the data from the 'source' CTE.
+-- It includes converting flags to boolean and casting certain columns to appropriate data types.
 renamed as (
-    select 
-        case when VendorID in (1, 2) then VendorID::int else null end as Vendor_ID,
+    select
+        -- Selecting various columns without transformation.
+        vendorid,
         lpep_pickup_datetime,
         lpep_dropoff_datetime,
+
+        -- Converting the 'store_and_fwd_flag' to a boolean value for consistency.
+        -- This is done using a custom DBT macro 'flag_to_bool'.
+        {{flag_to_bool("store_and_fwd_flag")}} as store_and_fwd_flag,        
+
+        -- Selecting additional columns as they are.
+        ratecodeid,
+        pulocationid,
+        dolocationid,
+
+        -- Casting 'passenger_count' to an integer type.
         passenger_count::int as passenger_count,
+
+        -- Selecting fare and trip related columns without transformation.
         trip_distance,
-        PULocationID::int as pickup_location_id,
-        DOLocationID::int as dropoff_location_id,
-        case when RateCodeID in (1, 2, 3, 4, 5, 6) then RateCodeID::int else null end as Rate_Code_ID,
-        case 
-            when store_and_fwd_flag = 'Y' then true
-            when store_and_fwd_flag = 'N' then false
-            else null 
-        end as store_and_fwd_flag,
-        case when payment_type in (1, 2, 3, 4, 5, 6) then payment_type::int else null end as payment_type,
         fare_amount,
         extra,
         mta_tax,
-        improvement_surcharge,
         tip_amount,
         tolls_amount,
+
+        -- The 'ehail_fee' column is removed because it contains 100% null values.
+        -- This decision helps optimize the dataset.
+        --ehail_fee,
+
+        -- Selecting additional columns related to charges and payment type.
+        improvement_surcharge,
         total_amount,
-        case when trip_type in (1, 2) then trip_type::int else null end as trip_type,
+        payment_type,
+        trip_type,
         congestion_surcharge,
+
+        -- Including 'filename' to track the source file of the data.
         filename
+
     from source
-    where extra >= 0 -- Exclude negative extras
-      and mta_tax >= 0 -- Exclude negative MTA tax
-      and tip_amount >= 0 -- Exclude negative tips
-      and tolls_amount >= 0 -- Exclude negative tolls
-      and total_amount >= 0 -- Exclude negative total amounts
-      and improvement_surcharge >= 0 -- Exclude negative improvement surcharge
-      and (congestion_surcharge >= 0 or congestion_surcharge is null) -- Exclude negative congestion surcharge
-    
+    -- Adding filters to the data selection.
+    -- Exclude rows where 'lpep_pickup_datetime' is in the future (post '2022-12-31').
+    -- Exclude rows with negative 'trip_distance' as it's not logically valid.
+    WHERE lpep_pickup_datetime < TIMESTAMP '2022-12-31' 
+    AND trip_distance >= 0
+    AND passenger_count IS NOT NULL
 )
 
+-- Final SELECT statement
+-- Retrieves the cleaned, transformed, and filtered data from the 'renamed' CTE.
+-- The dataset is now ready for further analysis or reporting.
 select * from renamed
+-- End of the SQL script

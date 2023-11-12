@@ -1,46 +1,61 @@
+-- Start of the SQL script
+
+-- The 'source' Common Table Expression (CTE)
+-- This CTE retrieves all columns from the 'fhvhv_tripdata' table in the 'main' source schema.
+-- The '{{ source('main', 'fhvhv_tripdata') }}' is a DBT macro for referencing a specific source table.
 with source as (
     select * from {{ source('main', 'fhvhv_tripdata') }}
 ),
 
+-- The 'renamed' CTE
+-- This CTE focuses on cleaning and restructuring data from the 'source' CTE.
+-- It includes transformations for text data and integration of custom DBT macros for boolean conversion.
 renamed as (
-    select 
+    select
+        -- Selecting 'hvfhs_license_num' without transformation.
         hvfhs_license_num,
-        dispatching_base_num,
-        originating_base_num,
+
+        -- Cleaning up 'dispatching_base_num' and 'originating_base_num' columns.
+        -- The 'trim' function removes leading/trailing spaces, and 'upper' converts text to uppercase.
+        trim(upper(dispatching_base_num)) as dispatching_base_num,
+        trim(upper(originating_base_num)) as originating_base_num,
+
+        -- Selecting various datetime columns without transformation.
         request_datetime,
         on_scene_datetime,
         pickup_datetime,
         dropoff_datetime,
-        PULocationID::int as pickup_location_id,
-        DOLocationID::int as dropoff_location_id,
+
+        -- Selecting location ID and trip detail columns as they are.
+        pulocationid,
+        dolocationid,
         trip_miles,
-        trip_time::int as trip_time,
+        trip_time,
         base_passenger_fare,
         tolls,
-        bcf as black_car_fund,
+        bcf,
         sales_tax,
         congestion_surcharge,
         airport_fee,
         tips,
         driver_pay,
-        case when shared_request_flag = 'Y' then true
-             when shared_request_flag = 'N' then false
-             else null end as shared_request_flag,
-        case when shared_match_flag = 'Y' then true
-             when shared_match_flag = 'N' then false
-             else null end as shared_match_flag,
-        case when access_a_ride_flag = 'Y' then true
-             when access_a_ride_flag = 'N' then false
-             when access_a_ride_flag = ' ' then null
-             else null end as access_a_ride_flag,
-        case when wav_request_flag = 'Y' then true
-             when wav_request_flag = 'N' then false
-             else null end as wav_request_flag,
-        case when wav_match_flag = 'Y' then true
-             when wav_match_flag = 'N' then false
-             else null end as wav_match_flag,
+
+        -- Converting flag columns to boolean values using custom DBT macros 'flag_to_bool'.
+        -- This standardizes the representation of these flags across the dataset.
+        {{flag_to_bool("shared_request_flag")}} as shared_request_flag,
+        {{flag_to_bool("shared_match_flag")}} as shared_match_flag,
+        {{flag_to_bool("access_a_ride_flag")}} as access_a_ride_flag,
+        {{flag_to_bool("wav_request_flag")}} as wav_request_flag,
+        {{flag_to_bool("wav_match_flag",)}} as wav_match_flag,
+
+        -- Including 'filename' to track the data source file.
         filename
+
     from source
 )
 
+-- Final SELECT statement
+-- Retrieves the cleaned and transformed data from the 'renamed' CTE.
+-- The dataset is now prepared for further analysis or integration with other datasets.
 select * from renamed
+-- End of the SQL script

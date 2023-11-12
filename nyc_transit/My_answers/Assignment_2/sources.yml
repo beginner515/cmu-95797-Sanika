@@ -5,9 +5,6 @@ sources:
         columns:
           - name: tripduration
             data_type: CHARACTER VARYING(256)
-            description: "The duration of the trip in seconds"
-            tests:
-              - dbt_expectations.expect_column_to_exist
           - name: starttime
             data_type: CHARACTER VARYING(256)
           - name: stoptime
@@ -32,22 +29,14 @@ sources:
             data_type: CHARACTER VARYING(256)
           - name: usertype
             data_type: CHARACTER VARYING(256)
-            description: "(Customer = 24-hour pass or 3-day pass user; Subscriber = Annual Member)"
           - name: birth year
             data_type: CHARACTER VARYING(256)
           - name: gender
             data_type: CHARACTER VARYING(256)
-            description: "Zero=unknown 1=male 2=female"
-            tests:
-              - accepted_values:
-                  values: ['0','1','2','',' ']
-                  config:
-                    severity: warn
           - name: ride_id
             data_type: CHARACTER VARYING(256)
           - name: rideable_type
             data_type: CHARACTER VARYING(256)
-            description: "The type of bike"
           - name: started_at
             data_type: CHARACTER VARYING(256)
           - name: ended_at
@@ -70,12 +59,6 @@ sources:
             data_type: CHARACTER VARYING(256)
           - name: member_casual
             data_type: CHARACTER VARYING(256)
-            description: "Whether Member or Causal"
-            tests:
-             - accepted_values:
-                 values: ['member','causal','',' ']
-                 config:
-                   severity: warn
           - name: filename
             data_type: CHARACTER VARYING(256)
 
@@ -83,31 +66,22 @@ sources:
         columns:
           - name: station
             data_type: CHARACTER VARYING(256)
-            tests:
-              - not_null
           - name: name
             data_type: CHARACTER VARYING(256)
-            tests:
-              - not_null
           - name: date
             data_type: CHARACTER VARYING(256)
           - name: awnd
             data_type: CHARACTER VARYING(256)
-            description: "This is the average wind speed"
           - name: prcp
             data_type: CHARACTER VARYING(256)
-            description: "Precipitation"
           - name: snow
             data_type: CHARACTER VARYING(256)
           - name: snwd
             data_type: CHARACTER VARYING(256)
-            description: "Snow depth"
           - name: tmax
             data_type: CHARACTER VARYING(256)
-            description: "Maximum Temperature"
           - name: tmin
             data_type: CHARACTER VARYING(256)
-            description: "Minimum Temperature"
           - name: filename
             data_type: CHARACTER VARYING(256)
 
@@ -115,23 +89,12 @@ sources:
         columns:
           - name: base_number
             data_type: CHARACTER VARYING(256)
-            description: "The TLC license number of the dispatching base"
-            tests:
-              - unique
-              - dbt_expectations.expect_column_to_exist
           - name: base_name
             data_type: CHARACTER VARYING(256)
-            description: "The official name of the base entity"
           - name: dba
             data_type: CHARACTER VARYING(256)
-            description: "The “doing business as” name of the base"
           - name: dba_category
             data_type: CHARACTER VARYING(256)
-            tests:
-              - accepted_values:
-                  values: ['other', 'uber', 'lyft', 'via' ,'juno']
-                  config:
-                    severity: warn
           - name: filename
             data_type: CHARACTER VARYING(256)
 
@@ -139,28 +102,14 @@ sources:
         columns:
           - name: dispatching_base_num
             data_type: CHARACTER VARYING(256)
-            description: "The TLC Base License Number of the base that dispatched the trip"
-            tests:
-              - dbt_expectations.expect_column_to_exist
-              - not_null
           - name: pickup_datetime
             data_type: TIMESTAMP
-            description: "The date and time of the trip pick-up"
-            tests:
-              - dbt_expectations.expect_column_to_exist
-              - not_null
           - name: dropoff_datetime
             data_type: TIMESTAMP
-            description: "The date and time of the trip dropoff"
-            tests:
-              - dbt_expectations.expect_column_to_exist
-              - not_null
           - name: pulocationid
             data_type: DOUBLE
-            description: "TLC Taxi Zone in which the trip began"
           - name: dolocationid
             data_type: DOUBLE
-            description: "TLC Taxi Zone in which the trip ended"
           - name: sr_flag
             data_type: INTEGER
           - name: affiliated_base_number
@@ -172,61 +121,24 @@ sources:
         columns:
           - name: hvfhs_license_num
             data_type: CHARACTER VARYING(256)
-            description: "The TLC license number of the HVFHS base or business
-                          As of September 2019, the HVFHS licensees are the following:
-                          • HV0002: Juno
-                          • HV0003: Uber
-                          • HV0004: Via
-                          • HV0005: Lyft"
-            tests:
-              - dbt_expectations.expect_column_to_exist
-              - not_null
           - name: dispatching_base_num
             data_type: CHARACTER VARYING(256)
-            description: "The TLC Base License Number of the base that dispatched the trip"
-            tests:
-              - dbt_expectations.expect_column_to_exist
-              - not_null
           - name: originating_base_num
             data_type: CHARACTER VARYING(256)
-            description: "base number of the base that received the original trip request"
           - name: request_datetime
             data_type: TIMESTAMP
-            description: "date/time when passenger requested to be picked up"
           - name: on_scene_datetime
             data_type: TIMESTAMP
-            description: "date/time when driver arrived at the pick-up location (Accessible
-                          ehicles-only)"
           - name: pickup_datetime
             data_type: TIMESTAMP
-            description: "The date and time of the trip pick-up"
-            tests:
-              - dbt_expectations.expect_column_to_exist
-              - not_null
           - name: dropoff_datetime
             data_type: TIMESTAMP
-            description: "The date and time of the trip drop-off"
-            tests:
-              - dbt_expectations.expect_column_to_exist
-              - not_null
           - name: pulocationid
             data_type: BIGINT
-            description: "TLC Taxi Zone in which the trip began"
-            tests:
-              - dbt_expectations.expect_column_to_exist
-              - not_null
           - name: dolocationid
             data_type: BIGINT
-            description: "TLC Taxi Zone in which the trip ended"
-            tests:
-              - dbt_expectations.expect_column_to_exist
-              - not_null
           - name: trip_miles
             data_type: DOUBLE
-            tests:
-              - dbt_expectations.expect_column_values_to_be_between:
-                  min_value: 0
-                  max_value: 5000
           - name: trip_time
             data_type: BIGINT
           - name: base_passenger_fare
@@ -245,32 +157,16 @@ sources:
             data_type: DOUBLE
           - name: driver_pay
             data_type: DOUBLE
-            description: "total driver pay (not including tolls or tips and net of commission,
-                          surcharges, or taxes)"
           - name: shared_request_flag
             data_type: CHARACTER VARYING(256)
-            description: "Did the passenger agree to a shared/pooled ride, regardless of
-                          whether they were matched? (Y/N)"
           - name: shared_match_flag
             data_type: CHARACTER VARYING(256)
-            description: "Did the passenger share the vehicle with another passenger who
-                          booked separately at any point during the trip? (Y/N)"
           - name: access_a_ride_flag
             data_type: CHARACTER VARYING(256)
-            description: "Was the trip administered on behalf of the Metropolitan
-                          Transportation Authority (MTA)? (Y/N)"
-            tests:
-              - accepted_values:
-                  values: ['Y','N' ]
-                  config:
-                    severity: warn
           - name: wav_request_flag
             data_type: CHARACTER VARYING(256)
-            description: "Did the passenger request a wheelchair-accessible vehicle (WAV)?
-                          (Y/N)"
           - name: wav_match_flag
             data_type: CHARACTER VARYING(256)
-            description: "Did the trip occur in a wheelchair-accessible vehicle (WAV)? (Y/N)"
           - name: filename
             data_type: CHARACTER VARYING(256)
 
@@ -280,26 +176,12 @@ sources:
             data_type: BIGINT
           - name: lpep_pickup_datetime
             data_type: TIMESTAMP
-            description: "The date and time when the meter was engaged."
           - name: lpep_dropoff_datetime
             data_type: TIMESTAMP
-            description: "The date and time when the meter was disengaged. "
           - name: store_and_fwd_flag
             data_type: CHARACTER VARYING(256)
-            description: "This flag indicates whether the trip record was held in vehicle
-                          memory before sending to the vendor, aka “store and forward,”
-                          because the vehicle did not have a connection to the server.
-                          Y= store and forward trip
-                          N= not a store and forward trip"
           - name: ratecodeid
             data_type: DOUBLE
-            description: "The final rate code in effect at the end of the trip.
-                          1= Standard rate
-                          2=JFK
-                          3=Newark
-                          4=Nassau or Westchester
-                          5=Negotiated fare
-                          6=Group ride"
           - name: pulocationid
             data_type: BIGINT
           - name: dolocationid
@@ -328,11 +210,6 @@ sources:
             data_type: DOUBLE
           - name: trip_type
             data_type: DOUBLE
-            description: "A code indicating whether the trip was a street-hail or a dispatch
-                          that is automatically assigned based on the metered rate in use but
-                          can be altered by the driver.
-                          1= Street-hail
-                          2= Dispatch"
           - name: congestion_surcharge
             data_type: DOUBLE
           - name: filename
@@ -344,30 +221,16 @@ sources:
             data_type: BIGINT
           - name: tpep_pickup_datetime
             data_type: TIMESTAMP
-            description: "The date and time when the meter was engaged."
           - name: tpep_dropoff_datetime
             data_type: TIMESTAMP
-            description: "The date and time when the meter was disengaged. "
           - name: passenger_count
             data_type: DOUBLE
           - name: trip_distance
             data_type: DOUBLE
           - name: ratecodeid
             data_type: DOUBLE
-            description: "The final rate code in effect at the end of the trip.
-                          1= Standard rate
-                          2=JFK
-                          3=Newark
-                          4=Nassau or Westchester
-                          5=Negotiated fare
-                          6=Group ride"
           - name: store_and_fwd_flag
             data_type: CHARACTER VARYING(256)
-            description: "This flag indicates whether the trip record was held in vehicle
-                          memory before sending to the vendor, aka “store and forward,”
-                          because the vehicle did not have a connection to the server.
-                          Y= store and forward trip
-                          N= not a store and forward tri"
           - name: pulocationid
             data_type: BIGINT
           - name: dolocationid
@@ -380,7 +243,6 @@ sources:
             data_type: DOUBLE
           - name: mta_tax
             data_type: DOUBLE
-            description: "TLC Taxi Zone in which the trip ended"
           - name: tip_amount
             data_type: DOUBLE
           - name: tolls_amount
