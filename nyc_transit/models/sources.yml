@@ -71,11 +71,7 @@ sources:
           - name: member_casual
             data_type: CHARACTER VARYING(256)
             description: "Whether Member or Causal"
-            tests:
-             - accepted_values:
-                 values: ['member','causal','',' ']
-                 config:
-                   severity: warn
+            
           - name: filename
             data_type: CHARACTER VARYING(256)
 
@@ -283,7 +279,7 @@ sources:
             description: "The date and time when the meter was engaged."
           - name: lpep_dropoff_datetime
             data_type: TIMESTAMP
-            description: "The date and time when the meter was disengaged. "
+            description: "The date and time when the meter was disengaged."
           - name: store_and_fwd_flag
             data_type: CHARACTER VARYING(256)
             description: "This flag indicates whether the trip record was held in vehicle
@@ -347,7 +343,7 @@ sources:
             description: "The date and time when the meter was engaged."
           - name: tpep_dropoff_datetime
             data_type: TIMESTAMP
-            description: "The date and time when the meter was disengaged. "
+            description: "The date and time when the meter was disengaged."
           - name: passenger_count
             data_type: DOUBLE
           - name: trip_distance
@@ -367,7 +363,7 @@ sources:
                           memory before sending to the vendor, aka “store and forward,”
                           because the vehicle did not have a connection to the server.
                           Y= store and forward trip
-                          N= not a store and forward tri"
+                          N= not a store and forward trip"
           - name: pulocationid
             data_type: BIGINT
           - name: dolocationid

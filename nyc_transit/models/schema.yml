@@ -20,7 +20,7 @@ models:
 
       - name: tripduration
         data_type: bigint
-        description: ""
+        description: "The duration of the trip in seconds"
         tests:
               - dbt_expectations.expect_column_to_exist
               - not_null
@@ -66,18 +66,18 @@ models:
     columns:
       - name: base_number
         data_type: varchar
-        description: ""
+        description: "The TLC license number of the dispatching base"
         tests:
               - dbt_expectations.expect_column_to_exist
               - not_null
 
       - name: base_name
         data_type: varchar
-        description: ""
+        description: "The official name of the base entity"
 
       - name: dba
         data_type: varchar
-        description: ""
+        description: "The “doing business as” name of the base"
 
       - name: dba_category
         data_type: varchar
@@ -99,14 +99,14 @@ models:
 
       - name: awnd
         data_type: double
-        description: ""
+        description: "This is the average wind speed"
         tests:
           - dbt_expectations.expect_column_values_to_be_of_type:
               column_type: double
 
       - name: prcp
         data_type: double
-        description: ""
+        description: "Precipitation"
         tests:
           - dbt_expectations.expect_column_values_to_be_of_type:
               column_type: double
@@ -120,18 +120,18 @@ models:
 
       - name: snwd
         data_type: double
-        description: ""
+        description: "Snow depth"
         tests:
           - dbt_expectations.expect_column_values_to_be_of_type:
               column_type: double
 
       - name: tmax
         data_type: integer
-        description: ""
+        description: "Maximum Temperature"
 
       - name: tmin
         data_type: integer
-        description: ""
+        description: "Minimum Temperature"
 
       - name: filename
         data_type: varchar
@@ -142,39 +142,45 @@ models:
     columns:
       - name: hvfhs_license_num
         data_type: varchar
-        description: ""
+        description: "The TLC license number of the HVFHS base or business
+                          As of September 2019, the HVFHS licensees are the following:
+                          • HV0002: Juno
+                          • HV0003: Uber
+                          • HV0004: Via
+                          • HV0005: Lyft"
 
       - name: dispatching_base_num
         data_type: varchar
-        description: ""
+        description: "The TLC Base License Number of the base that dispatched the trip"
 
       - name: originating_base_num
         data_type: varchar
-        description: ""
+        description: "base number of the base that received the original trip request"
 
       - name: request_datetime
         data_type: timestamp
-        description: ""
+        description: "date/time when passenger requested to be picked up"
 
       - name: on_scene_datetime
         data_type: timestamp
-        description: ""
+        description: "date/time when driver arrived at the pick-up location (Accessible
+                          ehicles-only)"
 
       - name: pickup_datetime
         data_type: timestamp
-        description: ""
+        description: "The date and time of the trip pick-up"
 
       - name: dropoff_datetime
         data_type: timestamp
-        description: ""
+        description: "The date and time of the trip drop-off"
 
       - name: pulocationid
         data_type: bigint
-        description: ""
+        description: "TLC Taxi Zone in which the trip began"
 
       - name: dolocationid
         data_type: bigint
-        description: ""
+        description: "TLC Taxi Zone in which the trip ended"
 
       - name: trip_miles
         data_type: double
@@ -214,39 +220,44 @@ models:
 
       - name: driver_pay
         data_type: double
-        description: ""
+        description: "total driver pay (not including tolls or tips and net of commission,
+                      surcharges, or taxes)"
 
       - name: shared_request_flag
         data_type: boolean
-        description: ""
+        description: "Did the passenger agree to a shared/pooled ride, regardless of
+                      whether they were matched? true or false"
         tests:
           - dbt_expectations.expect_column_values_to_be_of_type:
               column_type: boolean
 
       - name: shared_match_flag
         data_type: boolean
-        description: ""
+        description: "Did the passenger share the vehicle with another passenger who
+                      booked separately at any point during the trip? true or false"
         tests:
           - dbt_expectations.expect_column_values_to_be_of_type:
               column_type: boolean
 
       - name: access_a_ride_flag
         data_type: boolean
-        description: ""
+        description: "Was the trip administered on behalf of the Metropolitan
+                      Transportation Authority (MTA)? true or false"
         tests:
           - dbt_expectations.expect_column_values_to_be_of_type:
               column_type: boolean
 
       - name: wav_request_flag
         data_type: boolean
-        description: ""
+        description: "Did the passenger request a wheelchair-accessible vehicle (WAV)?
+                      true or false"
         tests:
           - dbt_expectations.expect_column_values_to_be_of_type:
               column_type: boolean
 
       - name: wav_match_flag
         data_type: boolean
-        description: ""
+        description: "Did the trip occur in a wheelchair-accessible vehicle (WAV)? true or false"
         tests:
           - dbt_expectations.expect_column_values_to_be_of_type:
               column_type: boolean
@@ -260,31 +271,31 @@ models:
     columns:
       - name: dispatching_base_num
         data_type: varchar
-        description: ""
+        description: "The TLC Base License Number of the base that dispatched the trip"
         tests:
               - dbt_expectations.expect_column_to_exist
               - not_null
               - relationships:
-                  to: source('main','stg__fhv_bases')
+                  to: ref('stg__fhv_bases')
                   field: base_number
                   config:
                     severity: warn
 
       - name: pickup_datetime
         data_type: timestamp
-        description: ""
+        description: "The date and time of the trip pick-up"
 
       - name: dropoff_datetime
         data_type: timestamp
-        description: ""
+        description: "The date and time of the trip dropoff"
 
       - name: pulocationid
         data_type: double
-        description: ""
+        description: "TLC Taxi Zone in which the trip began"
 
       - name: dolocationid
         data_type: double
-        description: ""
+        description: "TLC Taxi Zone in which the trip ended"
 
       - name: affiliated_base_number
         data_type: varchar
@@ -303,19 +314,29 @@ models:
 
       - name: lpep_pickup_datetime
         data_type: timestamp
-        description: ""
+        description: "The date and time when the meter was engaged."
 
       - name: lpep_dropoff_datetime
         data_type: timestamp
-        description: ""
+        description: "The date and time when the meter was disengaged."
 
       - name: store_and_fwd_flag
         data_type: boolean
-        description: ""
+        description: "This flag indicates whether the trip record was held in vehicle
+                          memory before sending to the vendor, aka “store and forward,”
+                          because the vehicle did not have a connection to the server.
+                          true= store and forward trip
+                          false= not a store and forward trip"
 
       - name: ratecodeid
         data_type: double
-        description: ""
+        description: "The final rate code in effect at the end of the trip.
+                          1= Standard rate
+                          2=JFK
+                          3=Newark
+                          4=Nassau or Westchester
+                          5=Negotiated fare
+                          6=Group ride"
 
       - name: pulocationid
         data_type: bigint
@@ -370,7 +391,11 @@ models:
 
       - name: trip_type
         data_type: double
-        description: ""
+        description: "A code indicating whether the trip was a street-hail or a dispatch
+                          that is automatically assigned based on the metered rate in use but
+                          can be altered by the driver.
+                          1= Street-hail
+                          2= Dispatch"
 
       - name: congestion_surcharge
         data_type: double
@@ -389,11 +414,11 @@ models:
 
       - name: tpep_pickup_datetime
         data_type: timestamp
-        description: ""
+        description: "The date and time when the meter was engaged."
 
       - name: tpep_dropoff_datetime
         data_type: timestamp
-        description: ""
+        description: "The date and time when the meter was disengaged."
 
       - name: passenger_count
         data_type: integer
@@ -408,11 +433,21 @@ models:
 
       - name: ratecodeid
         data_type: double
-        description: ""
+        description: "The final rate code in effect at the end of the trip.
+                          1= Standard rate
+                          2=JFK
+                          3=Newark
+                          4=Nassau or Westchester
+                          5=Negotiated fare
+                          6=Group ride"
 
       - name: store_and_fwd_flag
         data_type: boolean
-        description: ""
+        description: "This flag indicates whether the trip record was held in vehicle
+                          memory before sending to the vendor, aka “store and forward,”
+                          because the vehicle did not have a connection to the server.
+                          true= store and forward trip
+                          false= not a store and forward trip"
         tests:
           - dbt_expectations.expect_column_values_to_be_of_type:
               column_type: boolean
@@ -439,7 +474,7 @@ models:
 
       - name: mta_tax
         data_type: double
-        description: ""
+        description: "TLC Taxi Zone in which the trip ended"
 
       - name: tip_amount
         data_type: double
