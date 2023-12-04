@@ -1,0 +1,65 @@
+D with combined_trips as (
+>     select
+>         cast(pulocationid as int) as location_id
+>     from mart__fact_all_taxi_trips
+>     where pulocationid is not null and pulocationid = pulocationid::int
+> )
+>
+> select
+>     l.zone,
+>     count(*) as total_trips
+> from combined_trips ct
+> join mart__dim_locations l
+> on ct.location_id = l.locationid
+> group by l.zone
+> having count(*) < 100000;
+┌─────────────────────────────────────┬─────────────┐
+│                Zone                 │ total_trips │
+│               varchar               │    int64    │
+├─────────────────────────────────────┼─────────────┤
+│ Coney Island                        │       90431 │
+│ Parkchester                         │       94764 │
+│ Starrett City                       │       47719 │
+│ Fresh Meadows                       │       28416 │
+│ Flushing Meadows-Corona Park        │       16929 │
+│ Soundview/Bruckner                  │       99762 │
+│ Queens Village                      │       90203 │
+│ Dyker Heights                       │       53596 │
+│ Prospect Park                       │       20690 │
+│ Saint George/New Brighton           │       79052 │
+│ Rosedale                            │       58960 │
+│ Douglaston                          │       17634 │
+│ Heartland Village/Todt Hill         │       32986 │
+│ West Brighton                       │       25895 │
+│ Battery Park                        │        4853 │
+│ Kensington                          │       67533 │
+│ Elmhurst/Maspeth                    │       66271 │
+│ Long Island City/Queens Plaza       │       87838 │
+│ Bath Beach                          │       37390 │
+│ Riverdale/North Riverdale/Fieldston │       54247 │
+│       ·                             │         ·   │
+│       ·                             │         ·   │
+│       ·                             │         ·   │
+│ Middle Village                      │       68353 │
+│ Ocean Parkway South                 │       36285 │
+│ New Dorp/Midland Beach              │       18329 │
+│ Howard Beach                        │       43354 │
+│ Rockaway Park                       │       20134 │
+│ Great Kills                         │       19830 │
+│ Rego Park                           │       85669 │
+│ Brighton Beach                      │       73037 │
+│ Manhattanville                      │       92094 │
+│ Murray Hill-Queens                  │       63637 │
+│ Briarwood/Jamaica Hills             │       74907 │
+│ Van Cortlandt Park                  │       21779 │
+│ City Island                         │        7653 │
+│ Bay Terrace/Fort Totten             │       22769 │
+│ Mariners Harbor                     │       45134 │
+│ Charleston/Tottenville              │       13140 │
+│ Allerton/Pelham Gardens             │       78720 │
+│ Stapleton                           │       62132 │
+│ Freshkills Park                     │         786 │
+│ Port Richmond                       │       22574 │
+├─────────────────────────────────────┴─────────────┤
+│ 122 rows (40 shown)                     2 columns │
+└───────────────────────────────────────────────────┘

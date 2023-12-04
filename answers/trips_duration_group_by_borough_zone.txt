@@ -1,0 +1,75 @@
+D with extended_trip_data as (
+>     select
+>         cast(pulocationid as int) as location_id,  -- Ensure pulocationid is compatible with locationid
+>         duration_min
+>     from mart__fact_all_taxi_trips
+>     where pulocationid is not null and pulocationid = pulocationid::int
+> ),
+>
+> trip_data_with_location as (
+>     select
+>         etd.duration_min,
+>         dl.borough,
+>         dl.zone
+>     from extended_trip_data etd
+>     join mart__dim_locations dl
+>     on etd.location_id = dl.locationid
+> )
+>
+> select
+>     borough,
+>     zone,
+>     count(*) as total_trips,
+>     avg(duration_min) as average_duration
+> from trip_data_with_location
+> group by borough, zone;
+┌───────────────┬───────────────────────────────────┬─────────────┬────────────────────┐
+│    Borough    │               Zone                │ total_trips │  average_duration  │
+│    varchar    │              varchar              │    int64    │       double       │
+├───────────────┼───────────────────────────────────┼─────────────┼────────────────────┤
+│ Brooklyn      │ Brownsville                       │      261207 │ 16.588334156435316 │
+│ Manhattan     │ Central Harlem North              │      375403 │  16.23733161429184 │
+│ Bronx         │ Morrisania/Melrose                │      154663 │ 16.194002444023457 │
+│ Bronx         │ University Heights/Morris Heights │      182111 │ 15.318289394929467 │
+│ Bronx         │ Van Nest/Morris Park              │      146717 │ 15.989305942733289 │
+│ Queens        │ Queens Village                    │       90203 │ 16.569626287374035 │
+│ Queens        │ Old Astoria                       │      119687 │ 17.186478063615933 │
+│ Queens        │ Fresh Meadows                     │       28416 │ 16.828265765765767 │
+│ Queens        │ Woodside                          │      139988 │ 15.825842215047004 │
+│ Manhattan     │ Clinton West                      │      228324 │  17.63558364429495 │
+│ Brooklyn      │ Sunset Park West                  │      159442 │  19.02462964589004 │
+│ Staten Island │ Stapleton                         │       62132 │ 23.435025429730253 │
+│ Staten Island │ Port Richmond                     │       22574 │ 16.944360769026314 │
+│ Manhattan     │ Manhattanville                    │       92094 │ 16.533205203379158 │
+│ Bronx         │ Allerton/Pelham Gardens           │       78720 │ 15.020795223577236 │
+│ Brooklyn      │ Bensonhurst East                  │       88185 │ 16.305732267392415 │
+│ Queens        │ Rosedale                          │       58960 │ 16.023863636363636 │
+│ Staten Island │ Charleston/Tottenville            │       13140 │  17.63021308980213 │
+│ Brooklyn      │ Borough Park                      │      171151 │ 16.190410806831395 │
+│ Manhattan     │ Times Sq/Theatre District         │      409824 │ 19.635902240961975 │
+│     ·         │      ·                            │         ·   │          ·         │
+│     ·         │      ·                            │         ·   │          ·         │
+│     ·         │      ·                            │         ·   │          ·         │
+│ Manhattan     │ Bloomingdale                      │       72605 │ 17.287982921286414 │
+│ Brooklyn      │ DUMBO/Vinegar Hill                │      108754 │  18.74116814094194 │
+│ Brooklyn      │ Cypress Hills                     │      121175 │  16.96251702083763 │
+│ Brooklyn      │ Fort Greene                       │      225462 │  18.44990730145213 │
+│ Brooklyn      │ Williamsburg (North Side)         │      287233 │  19.45703662183663 │
+│ Bronx         │ Co-Op City                        │      131879 │  16.64985327459262 │
+│ Manhattan     │ Upper East Side South             │      507470 │  14.58969397205746 │
+│ Queens        │ Maspeth                           │       85841 │ 15.814039910998241 │
+│ Brooklyn      │ Bensonhurst West                  │      114646 │  16.42887671615233 │
+│ Bronx         │ Van Cortlandt Village             │      146404 │ 15.484706702002677 │
+│ Manhattan     │ Inwood Hill Park                  │        8852 │ 16.892114776321737 │
+│ Manhattan     │ Central Harlem                    │      274669 │ 16.896045786018806 │
+│ Manhattan     │ Yorkville West                    │      308947 │ 16.047658659899593 │
+│ Manhattan     │ Union Sq                          │      461331 │ 17.031005937168757 │
+│ Queens        │ Queensbridge/Ravenswood           │       54244 │ 18.287865939090036 │
+│ Manhattan     │ Randalls Island                   │        4573 │  21.95692105838618 │
+│ Queens        │ Hollis                            │       40793 │ 16.954845194028387 │
+│ Queens        │ Kew Gardens Hills                 │       55479 │ 17.508588835415203 │
+│ Brooklyn      │ Greenpoint                        │      244572 │  18.06585790687405 │
+│ Bronx         │ Country Club                      │       10329 │ 15.961758156646335 │
+├───────────────┴───────────────────────────────────┴─────────────┴────────────────────┤
+│ 262 rows (40 shown)                                                        4 columns │
+└──────────────────────────────────────────────────────────────────────────────────────┘

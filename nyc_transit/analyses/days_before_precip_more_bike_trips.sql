@@ -1,0 +1,27 @@
+WITH Weather AS (
+    SELECT
+        CAST(DATE AS DATE) AS WeatherDate, -- Adjusted for date casting
+        (CASE WHEN PRCP > 0 OR SNOW > 0 THEN TRUE ELSE FALSE END) AS IsPrecipitation
+    FROM central_park_weather
+),
+BikeTrips AS (
+    SELECT
+        CAST(started_at_ts AS DATE) AS TripDate, -- Adjusted for date casting
+        COUNT(*) AS NumTrips
+    FROM mart__fact_all_bike_trips
+    GROUP BY TripDate
+),
+WeatherTrips AS (
+    SELECT
+        b.TripDate,
+        b.NumTrips,
+        COALESCE(w.IsPrecipitation, FALSE) AS IsPrecipitation,
+        COALESCE(LAG(w.IsPrecipitation) OVER (ORDER BY b.TripDate), FALSE) AS PrevDayPrecipitation -- COALESCE to handle NULLs
+    FROM BikeTrips b
+    LEFT JOIN Weather w ON b.TripDate = w.WeatherDate -- Ensure date casting is correct
+)
+
+SELECT
+    AVG(CASE WHEN IsPrecipitation THEN NumTrips ELSE NULL END) AS AvgTripsOnPrecipDays,
+    AVG(CASE WHEN PrevDayPrecipitation AND NOT IsPrecipitation THEN NumTrips ELSE NULL END) AS AvgTripsOnPrevToPrecipDays
+FROM WeatherTrips;

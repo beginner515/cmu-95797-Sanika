@@ -7,3 +7,4 @@
     else {{column_name}}
 end)::bool
 {%- endmacro %}
+

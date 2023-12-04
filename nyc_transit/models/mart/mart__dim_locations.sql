@@ -1,3 +1,3 @@
 select
-  {{ dbt_utils.star(ref('taxi+_zone_lookup')) }}
-from {{ ref('taxi+_zone_lookup') }}
+  {{ dbt_utils.star(ref('taxi_zone_lookup')) }}
+from {{ ref('taxi_zone_lookup') }}

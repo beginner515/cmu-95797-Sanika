@@ -1,0 +1,82 @@
+D WITH PickupDiffs AS (
+>     SELECT
+>         tzt.Borough,
+>         tzt.Zone,
+>         ft.pickup_datetime,
+>         LAG(ft.pickup_datetime) OVER (
+>             PARTITION BY ft.PUlocationID
+>             ORDER BY ft.pickup_datetime
+>         ) AS prev_pickup_time
+>     FROM mart__fact_all_taxi_trips ft
+>     INNER JOIN taxi_zone_lookup tzt
+>         ON CAST(ft.PUlocationID AS INT) = tzt.LocationID  -- Cast as INT if necessary
+> ),
+> TimeDiffs AS (
+>     SELECT
+>         Borough,
+>         Zone,
+>         pickup_datetime,
+>         EXTRACT(EPOCH FROM (pickup_datetime - prev_pickup_time)) / 60 AS time_diff_minutes -- Calculate the difference in minutes
+>     FROM PickupDiffs
+>     WHERE prev_pickup_time IS NOT NULL  -- Exclude the first trip which has no previous trip to compare to
+> )
+>
+> SELECT
+>     Borough,
+>     Zone,
+>     AVG(time_diff_minutes) AS avg_time_between_pickups
+> FROM TimeDiffs
+> GROUP BY Borough, Zone
+> ORDER BY Borough, Zone;
+100% ?████████████████████████████████████████████████████████████? 
+┌───────────────┬───────────────────────────────────┬──────────────────────────┐
+│    Borough    │               Zone                │ avg_time_between_pickups │
+│    varchar    │              varchar              │          double          │
+├───────────────┼───────────────────────────────────┼──────────────────────────┤
+│ Bronx         │ Allerton/Pelham Gardens           │       13.371051461527683 │
+│ Bronx         │ Bedford Park                      │        5.727868196807049 │
+│ Bronx         │ Belmont                           │         9.61041510697232 │
+│ Bronx         │ Bronx Park                        │        67.69707893834158 │
+│ Bronx         │ Bronxdale                         │       10.527806227058662 │
+│ Bronx         │ City Island                       │       137.55205828541574 │
+│ Bronx         │ Claremont/Bathgate                │        7.660354869540905 │
+│ Bronx         │ Co-Op City                        │         51.8438985274236 │
+│ Bronx         │ Country Club                      │       101.90188161631862 │
+│ Bronx         │ Crotona Park                      │       180.92807288980632 │
+│ Bronx         │ Crotona Park East                 │        10.89201761828895 │
+│ Bronx         │ East Concourse/Concourse Village  │        5.173450880167879 │
+│ Bronx         │ East Tremont                      │        6.226185842836813 │
+│ Bronx         │ Eastchester                       │       10.252992934881524 │
+│ Bronx         │ Fordham South                     │       12.020635962908983 │
+│ Bronx         │ Highbridge                        │       7.5993662493804015 │
+│ Bronx         │ Hunts Point                       │        8.826528980828636 │
+│ Bronx         │ Kingsbridge Heights               │       10.061744745117904 │
+│ Bronx         │ Longwood                          │       11.841898038774444 │
+│ Bronx         │ Melrose South                     │         6.04029154162075 │
+│   ·           │       ·                           │                 ·        │
+│   ·           │       ·                           │                 ·        │
+│   ·           │       ·                           │                 ·        │
+│ Staten Island │ Bloomfield/Emerson Hill           │       22.710675757314355 │
+│ Staten Island │ Charleston/Tottenville            │        80.10808661237496 │
+│ Staten Island │ Eltingville/Annadale/Prince's Bay │        80.53419918388151 │
+│ Staten Island │ Freshkills Park                   │       1340.1370700636935 │
+│ Staten Island │ Great Kills                       │        53.07887353539469 │
+│ Staten Island │ Great Kills Park                  │       16770.925806451618 │
+│ Staten Island │ Grymes Hill/Clifton               │        30.85179084354308 │
+│ Staten Island │ Heartland Village/Todt Hill       │       31.911135869839697 │
+│ Staten Island │ Mariners Harbor                   │        23.32208140385075 │
+│ Staten Island │ New Dorp/Midland Beach            │       57.428526480430676 │
+│ Staten Island │ Oakwood                           │        96.17151362874974 │
+│ Staten Island │ Port Richmond                     │        46.62805416500534 │
+│ Staten Island │ Rossville/Woodrow                 │       136.72971984065072 │
+│ Staten Island │ Saint George/New Brighton         │       13.315895223758565 │
+│ Staten Island │ South Beach/Dongan Hills          │       39.163462444808154 │
+│ Staten Island │ Stapleton                         │       16.941490023767017 │
+│ Staten Island │ West Brighton                     │       40.650393913647754 │
+│ Staten Island │ Westerleigh                       │        43.39465883323028 │
+│ Unknown       │ NA                                │        68.39617775756014 │
+│ Unknown       │ NV                                │       1.1864613771078616 │
+├───────────────┴───────────────────────────────────┴──────────────────────────┤
+│ 262 rows (40 shown)                                                3 columns │
+└──────────────────────────────────────────────────────────────────────────────┘
+D 
